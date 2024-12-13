@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rest Break Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary-color: #007BFF;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --input-bg: #f5f5f5;
+            --border-color: #dddddd;
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --background-color: #1a1a1a;
+            --text-color: #ffffff;
+            --input-bg: #333333;
+            --border-color: #444444;
+            --card-bg: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .output-card {
+            border: 2px solid var(--primary-color);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        h3 {
+            margin: 15px 0;
+            color: var(--text-color);
+        }
+
+        .input-group {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .input-group {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 16px;
+            max-width: 200px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            min-height: 44px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .break-display {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .break-row {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .break-time {
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .time-display {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        #landTime {
+            font-size: 1.5rem;
+            font-family: monospace;
+            color: var(--primary-color);
+            margin-top: 10px;
+        }
+
+        #Alert3Man {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            display: none;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .dash {
+            color: var(--text-color);
+        }
+
+        .center-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Rest Break Calculator</h1>
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+
+    <div class="card">
+        <h2>Flight Details</h2>
+        <div class="input-group">
+            <div>
+                <label for="ETEBox">ETE (Estimated Time Enroute)</label>
+                <input type="text" id="ETEBox" placeholder="e.g. 740" maxlength="4">
+            </div>
+            <div>
+                <label for="OffTimeBox">Off Time</label>
+                <input type="text" id="OffTimeBox" placeholder="e.g. 1430" maxlength="4">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div>
+                <label for="StartBreaksBox">After T.O.</label>
+                <input type="text" id="StartBreaksBox" value="15" maxlength="4">
+            </div>
+            <div>
+                <label for="EndBreaksBox">Before Land</label>
+                <input type="text" id="EndBreaksBox" value="45" maxlength="4">
+            </div>
+        </div>
+        
+        <div class="center-button">
+            <button onclick="UpdateBreaks()">Calculate Initial Breaks</button>
+        </div>
+    </div>
+
+    <div class="card output-card">
+        <h2>Calculated Landing Time</h2>
+        <div id="landTime">-</div>
+    </div>
+
+    <div class="card">
+        <h2>3 Pilots Configuration</h2>
+        <div class="input-group">
+            <div>
+                <label for="MinLPBox">Min Land Pilot Break</label>
+                <input type="text" id="MinLPBox" value="145" maxlength="4">
+            </div>
+            <div>
+                <label for="MinMonitorBox">Min Monitor Pilot Break</label>
+                <input type="text" id="MinMonitorBox" value="130" maxlength="4">
+            </div>
+            <div>
+                <label for="Break1Pilot">Break 1 Pilot</label>
+                <select id="Break1Pilot">
+                    <option value="Relief">Relief</option>
+                    <option value="Land">Land</option>
+                    <option value="Monitor">Monitor</option>
+                </select>
+            </div>
+            <div>
+                <label for="Break2Pilot">Break 2 Pilot</label>
+                <select id="Break2Pilot">
+                    <option value="Land">Land</option>
+                    <option value="Monitor">Monitor</option>
+                    <option value="Relief">Relief</option>
+                </select>
+            </div>
+            <div>
+                <label for="Break3Pilot">Break 3 Pilot</label>
+                <select id="Break3Pilot">
+                    <option value="Monitor">Monitor</option>
+                    <option value="Relief">Relief</option>
+                    <option value="Land">Land</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="Alert3Man"></div>
+
+        <div class="break-display">
+            <div class="break-row">
+                <span>Break 1:</span>
+                <div class="time-display">
+                    <span id="zAAA_time1" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAA_end1" class="break-time">-</span>
+                </div>
+                <span id="AAA_BreakLength1" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 2:</span>
+                <div class="time-display">
+                    <span id="zAAA_time2" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAA_end2" class="break-time">-</span>
+                </div>
+                <span id="AAA_BreakLength2" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 3:</span>
+                <div class="time-display">
+                    <span id="zAAA_time3" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAA_end3" class="break-time">-</span>
+                </div>
+                <span id="AAA_BreakLength3" class="break-time">-</span>
+            </div>
+            <span id="zAAA_time4" hidden>-</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>4 Pilots Even Breaks</h2>
+        <div class="break-display">
+            <div class="break-row">
+                <span>Break 1:</span>
+                <div class="time-display">
+                    <span id="zAAAA_time1" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAAA_end1" class="break-time">-</span>
+                </div>
+                <span id="AAAA_BreakLength1" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 2:</span>
+                <div class="time-display">
+                    <span id="zAAAA_time2" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAAA_end2" class="break-time">-</span>
+                </div>
+                <span id="AAAA_BreakLength2" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 3:</span>
+                <div class="time-display">
+                    <span id="zAAAA_time3" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAAA_end3" class="break-time">-</span>
+                </div>
+                <span id="AAAA_BreakLength3" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 4:</span>
+                <div class="time-display">
+                    <span id="zAAAA_time4" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAAAA_end4" class="break-time">-</span>
+                </div>
+                <span id="AAAA_BreakLength4" class="break-time">-</span>
+            </div>
+            <span id="zAAAA_time5" hidden>-</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>4 Pilots Uneven Breaks</h2>
+        <div class="input-group">
+            <div>
+                <label for="ABreakLengthBox">Break A Duration</label>
+                <input type="text" id="ABreakLengthBox" value="200" maxlength="4">
+            </div>
+        </div>
+
+        <h3>Pattern: AABB</h3>
+        <div class="break-display">
+            <div class="break-row">
+                <span>Break 1:</span>
+                <div class="time-display">
+                    <span id="zAABB_time1" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAABB_end1" class="break-time">-</span>
+                </div>
+                <span id="AABB_BreakLength1" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 2:</span>
+                <div class="time-display">
+                    <span id="zAABB_time2" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAABB_end2" class="break-time">-</span>
+                </div>
+                <span id="AABB_BreakLength2" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 3:</span>
+                <div class="time-display">
+                    <span id="zAABB_time3" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAABB_end3" class="break-time">-</span>
+                </div>
+                <span id="AABB_BreakLength3" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 4:</span>
+                <div class="time-display">
+                    <span id="zAABB_time4" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zAABB_end4" class="break-time">-</span>
+                </div>
+                <span id="AABB_BreakLength4" class="break-time">-</span>
+            </div>
+            <span id="zAABB_time5" hidden>-</span>
+        </div>
+
+        <h3>Pattern: ABBA</h3>
+        <div class="break-display">
+            <div class="break-row">
+                <span>Break 1:</span>
+                <div class="time-display">
+                    <span id="zABBA_time1" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zABBA_end1" class="break-time">-</span>
+                </div>
+                <span id="ABBA_BreakLength1" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 2:</span>
+                <div class="time-display">
+                    <span id="zABBA_time2" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zABBA_end2" class="break-time">-</span>
+                </div>
+                <span id="ABBA_BreakLength2" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 3:</span>
+                <div class="time-display">
+                    <span id="zABBA_time3" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zABBA_end3" class="break-time">-</span>
+                </div>
+                <span id="ABBA_BreakLength3" class="break-time">-</span>
+            </div>
+            <div class="break-row">
+                <span>Break 4:</span>
+                <div class="time-display">
+                    <span id="zABBA_time4" class="break-time">-</span>
+                    <span class="dash">-</span>
+                    <span id="zABBA_end4" class="break-time">-</span>
+                </div>
+                <span id="ABBA_BreakLength4" class="break-time">-</span>
+            </div>
+            <span id="zABBA_time5" hidden>-</span>
+        </div>
+
+        <div class="center-button">
+            <button onclick="UpdateBreaks()">Update Breaks</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+            localStorage.setItem('theme', body.getAttribute('data-theme'));
+        }
+
+        // Set initial theme
+        const savedTheme = localStorage.getItem('theme') || 
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.body.setAttribute('data-theme', savedTheme);
+
+        // Calculate end times for breaks
+        function calculateEndTime(startTime, duration) {
+            if (startTime === '-' || duration === '-') return '-';
+            try {
+                // Clean up the start time - remove any unexpected characters
+                startTime = startTime.split('-')[0].trim(); // Take just the start time part
+                startTime = startTime.replace(/[^0-9]/g, '');
+                duration = duration.replace(/[^0-9]/g, '');
+                
+                if (!startTime || !duration) return '-';
+                
+                const result = AddTimes(startTime, duration);
+                const len4Result = MakeLen4String(result);
+                // Always show hours, even if they're "00"
+                const hours = len4Result.substring(0, 2);
+                const minutes = len4Result.substring(2, 4);
+                return `${hours}:${minutes}`;
+            } catch (e) {
+                console.error('Error in calculateEndTime:', e);
+                return '-';
+            }
+        }
+
+        // Original update breaks function preserved
+        const originalUpdateBreaks = window.UpdateBreaks;
+
+        // Override UpdateBreaks to add end time calculations
+        window.UpdateBreaks = function() {
+            // Call original function first
+            if (originalUpdateBreaks) {
+                originalUpdateBreaks();
+            }
+
+            // Calculate landing time
+            const ete = document.getElementById('ETEBox').value;
+            const offTime = document.getElementById('OffTimeBox').value;
+            if (ete && offTime) {
+                try {
+                    const landTime = AddTimes(offTime, ete);
+                    document.getElementById('landTime').textContent = Colonize(landTime);
+                } catch (e) {
+                    console.error('Error calculating landing time:', e);
+                }
+            }
+
+            // Calculate end times for all break patterns
+            ['AAA', 'AAAA', 'AABB', 'ABBA'].forEach(pattern => {
+                for (let i = 1; i <= 4; i++) {
+                    const startTimeEl = document.getElementById(`z${pattern}_time${i}`);
+                    const durationEl = document.getElementById(`${pattern}_BreakLength${i}`);
+                    const endTimeEl = document.getElementById(`z${pattern}_end${i}`);
+                    
+                    if (startTimeEl && durationEl && endTimeEl) {
+                        const startTime = startTimeEl.textContent;
+                        const duration = durationEl.textContent;
+                        endTimeEl.textContent = calculateEndTime(startTime, duration);
+                    }
+                }
+            });
+        };
+
+        // Add event listeners for real-time landing time updates
+        document.getElementById('ETEBox').addEventListener('input', UpdateBreaks);
+        document.getElementById('OffTimeBox').addEventListener('input', UpdateBreaks);
+    </script>
+</body>
+</html>
