@@ -3,7 +3,6 @@ const CACHE_NAME = 'pilot-break-calculator-cache-v2';
 const urlsToCache = [
   'index.html',
   'script.js',
-  'doogie.css',
   'manifest.json',
   'icons/icon-192x192.png',
   'icons/icon-256x256.png',
