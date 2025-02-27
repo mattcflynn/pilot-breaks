@@ -192,22 +192,22 @@
         <div class="input-group">
             <div>
                 <label for="ETEBox">ETE (Estimated Time Enroute)</label>
-                <input type="text" id="ETEBox" placeholder="e.g. 740" maxlength="4">
+                <input type="number" inputmode="numeric" id="ETEBox" placeholder="e.g. 740" maxlength="4">
             </div>
             <div>
                 <label for="OffTimeBox">Off Time</label>
-                <input type="text" id="OffTimeBox" placeholder="e.g. 1430" maxlength="4">
+                <input type="number" inputmode="numeric" id="OffTimeBox" placeholder="e.g. 1430" maxlength="4">
             </div>
         </div>
 
         <div class="input-group">
             <div>
                 <label for="StartBreaksBox">After T.O.</label>
-                <input type="text" id="StartBreaksBox" value="15" maxlength="4">
+                <input type="number" inputmode="numeric" id="StartBreaksBox" value="15" maxlength="4">
             </div>
             <div>
                 <label for="EndBreaksBox">Before Land</label>
-                <input type="text" id="EndBreaksBox" value="45" maxlength="4">
+                <input type="number" inputmode="numeric" id="EndBreaksBox" value="45" maxlength="4">
             </div>
         </div>
         
@@ -217,7 +217,7 @@
     </div>
 
     <div class="card output-card">
-        <h2>Calculated Landing Time</h2>
+        <h2>Calculated Landing Time (UTC)</h2>
         <div id="landTime">-</div>
     </div>
 
@@ -226,11 +226,11 @@
         <div class="input-group">
             <div>
                 <label for="MinLPBox">Min Land Pilot Break</label>
-                <input type="text" id="MinLPBox" value="145" maxlength="4">
+                <input type="number" inputmode="numeric" id="MinLPBox" value="145" maxlength="4">
             </div>
             <div>
                 <label for="MinMonitorBox">Min Monitor Pilot Break</label>
-                <input type="text" id="MinMonitorBox" value="130" maxlength="4">
+                <input type="number" inputmode="numeric" id="MinMonitorBox" value="130" maxlength="4">
             </div>
             <div>
                 <label for="Break1Pilot">Break 1 Pilot</label>
@@ -340,7 +340,7 @@
         <div class="input-group">
             <div>
                 <label for="ABreakLengthBox">Break A Duration</label>
-                <input type="text" id="ABreakLengthBox" value="200" maxlength="4">
+                <input type="number" inputmode="numeric" id="ABreakLengthBox" value="200" maxlength="4">
             </div>
         </div>
 
